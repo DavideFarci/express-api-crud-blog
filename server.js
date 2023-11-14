@@ -10,8 +10,10 @@ dotenv.config();
 const homeController = require("./controllers/homeController");
 const postsRouter = require("./routers/posts");
 
-// istanza di express
+// Istanza di express
 const app = express();
+// Configuro express per leggere i dati in formato x-www-form-urlencoded
+app.use(express.urlencoded({ extended: true }));
 // Configuraz. file statici
 app.use(express.static("public"));
 

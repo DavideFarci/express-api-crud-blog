@@ -8,6 +8,9 @@ router.get("/", postController.index);
 // Create
 router.get("/create", postController.create);
 
+// Store
+router.post("/", postController.store);
+
 // Show (slug)
 router.get("/:slug", postController.show);
 

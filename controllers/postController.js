@@ -1,7 +1,9 @@
+const { log } = require("console");
 const fs = require("fs");
 const path = require("path");
+const { kebabCase } = require("lodash");
 
-const posts = require("../db/posts.js");
+const { posts, jsonPosts } = require("../db/posts.js");
 
 // INDEX ----------------------------------------------
 function index(req, res) {
@@ -132,6 +134,34 @@ function create(req, res) {
   });
 }
 
+function store(req, res) {
+  log(req.body);
+  fs.writeFileSync(path.resolve(__dirname, "../db/posts.json"), jsonPosts);
+  const jsonDb = require("../db/posts.json");
+  // Recupero gli id dei post
+  /**
+   * @type {number[]}
+   */
+  let idList = jsonDb.map((post) => post.id);
+
+  // Riordino gli ig
+  idList.sort((a, b) => b - a);
+  log(idList);
+
+  // Aggiungere il post al db
+  jsonDb.push({
+    ...req.body,
+    id: idList[0] + 1,
+    slug: kebabCase(req.body.title),
+  });
+
+  const jsonObj = JSON.stringify(jsonDb, null, 2);
+
+  fs.writeFileSync(path.resolve(__dirname, "../db/posts.json"), jsonObj);
+
+  res.json(jsonDb[jsonDb.length - 1]);
+}
+
 // DOWNLOAD ----------------------------------------------
 function downloadImg(req, res) {
   const post = findOrFail(req, res);
@@ -162,4 +192,5 @@ module.exports = {
   show,
   create,
   downloadImg,
+  store,
 };
